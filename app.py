@@ -4,6 +4,7 @@ import pandas as pd
 import openai
 from dotenv import load_dotenv
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Load environment variables
 load_dotenv()
@@ -15,9 +16,9 @@ st.title("Analisis Data Ekspor Indonesia dan Insight")
 
 # File uploader
 st.sidebar.header("Unggah Data Ekspor Anda")
-uploaded_file = st.sidebar.file_uploader("Unggah file Excel atau CSV", type=["csv", "xlsx"])
+uploaded_files = st.sidebar.file_uploader("Unggah hingga 5 file Excel atau CSV", type=["csv", "xlsx"], accept_multiple_files=True)
 
-# GPT-4O Search and Analysis function
+# GPT-4O Analysis function
 def analyze_data_with_gpt4o(data):
     if data.empty:
         return "Tidak ada data untuk dianalisis. Mohon unggah file."
@@ -27,7 +28,7 @@ def analyze_data_with_gpt4o(data):
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Anda adalah seorang analis data yang ahli dalam data ekspor."},
                 {"role": "user", "content": prompt}
@@ -40,47 +41,58 @@ def analyze_data_with_gpt4o(data):
         return f"Error: {e}"
 
 # Visualize uploaded data
-if uploaded_file is not None:
-    try:
-        # Load the data
-        if uploaded_file.name.endswith(".csv"):
-            data = pd.read_csv(uploaded_file)
-        else:
-            data = pd.read_excel(uploaded_file)
+def visualize_data(data):
+    st.write("### Pilih Jenis Visualisasi")
+    chart_type = st.selectbox("Jenis Grafik", ["Bar Chart", "Line Chart", "Scatter Plot", "Pie Chart", "Histogram", "Box Plot", "Heatmap", "Treemap", "Area Chart", "Sunburst Chart"])
 
-        st.write("### Data yang Diunggah")
-        st.dataframe(data)
+    st.write("### Pilih Kolom untuk Visualisasi")
+    x_axis = st.selectbox("Kolom X", data.columns)
+    y_axis = st.selectbox("Kolom Y", data.columns)
 
-        # Interactive visualization
-        st.write("### Grafik Interaktif")
-        column_to_plot = st.selectbox("Pilih kolom untuk visualisasi", options=data.columns)
-        if column_to_plot:
-            fig = px.histogram(data, x=column_to_plot, title=f"Distribusi {column_to_plot}")
-            st.plotly_chart(fig)
+    if chart_type == "Bar Chart":
+        fig = px.bar(data, x=x_axis, y=y_axis)
+    elif chart_type == "Line Chart":
+        fig = px.line(data, x=x_axis, y=y_axis)
+    elif chart_type == "Scatter Plot":
+        fig = px.scatter(data, x=x_axis, y=y_axis)
+    elif chart_type == "Pie Chart":
+        fig = px.pie(data, names=x_axis, values=y_axis)
+    elif chart_type == "Histogram":
+        fig = px.histogram(data, x=x_axis)
+    elif chart_type == "Box Plot":
+        fig = px.box(data, x=x_axis, y=y_axis)
+    elif chart_type == "Heatmap":
+        fig = px.imshow(data.corr())
+    elif chart_type == "Treemap":
+        fig = px.treemap(data, path=[x_axis], values=y_axis)
+    elif chart_type == "Area Chart":
+        fig = px.area(data, x=x_axis, y=y_axis)
+    elif chart_type == "Sunburst Chart":
+        fig = px.sunburst(data, path=[x_axis], values=y_axis)
 
-        # GPT-4O analysis
-        st.write("### Analisis GPT-4O")
-        analysis = analyze_data_with_gpt4o(data)
-        st.write(analysis)
-    except Exception as e:
-        st.error(f"Error saat memuat file: {e}")
+    st.plotly_chart(fig)
 
-# GPT-4o Search feature
-st.sidebar.header("Pencarian Data dengan GPT-4o")
-search_query = st.sidebar.text_input("Masukkan pertanyaan pencarian Anda")
-if search_query:
-    try:
-        search_response = openai.ChatCompletion.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "Anda adalah asisten pencarian data ekspor yang membantu."},
-                {"role": "user", "content": search_query}
-            ],
-            max_tokens=2048,
-            temperature=1.0
-        )
-        st.sidebar.write(search_response.choices[0].message['content'])
-    except Exception as e:
-        st.sidebar.error(f"Error: {e}")
+if uploaded_files:
+    for uploaded_file in uploaded_files:
+        try:
+            # Load the data
+            if uploaded_file.name.endswith(".csv"):
+                data = pd.read_csv(uploaded_file)
+            else:
+                data = pd.read_excel(uploaded_file)
+
+            st.write(f"### Data dari {uploaded_file.name}")
+            st.dataframe(data)
+
+            # Visualization menu
+            visualize_data(data)
+
+            # GPT-4O Analysis
+            st.write("### Analisis GPT-4O")
+            analysis = analyze_data_with_gpt4o(data)
+            st.write(analysis)
+
+        except Exception as e:
+            st.error(f"Error saat memuat file {uploaded_file.name}: {e}")
 
 
