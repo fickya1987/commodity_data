@@ -105,7 +105,7 @@ if uploaded_files:
 
                     response = openai.ChatCompletion.create(
                         model="gpt-4o",
-                        max_completion_tokens="2048"
+                        max_completion_tokens= 2048,
                         messages=[{"role": "system", "content": "Anda adalah analis data berpengalaman."},
                                   {"role": "user", "content": prompt}]
                     )
