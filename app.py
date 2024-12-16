@@ -95,7 +95,7 @@ if uploaded_files:
                 try:
                     if analysis_type == "Analisis Berdasarkan Data":
                         prompt = (
-                            f"Berdasarkan dataset berikut, lakukan analisis mendalam tentang '{analysis_query}'. Fokuskan analisis pada tren ekspor dan peluang untuk Indonesia:\n"
+                            f"Berdasarkan dataset berikut, lakukan analisis mendalam tentang '{analysis_query}'.Gunakan bahasa Indonesia.Fokuskan analisis pada tren ekspor dan peluang untuk Indonesia:\n"
                             + data.to_csv(index=False)
                         )
                     else:
@@ -106,7 +106,7 @@ if uploaded_files:
                     response = openai.ChatCompletion.create(
                         model="gpt-4o",
                         max_completion_tokens= 2048,
-                        messages=[{"role": "system", "content": "Anda adalah analis data berpengalaman."},
+                        messages=[{"role": "system", "content": "Anda adalah analis data berpengalaman. Gunakan bahasa Indonesia"},
                                   {"role": "user", "content": prompt}]
                     )
                     result = response['choices'][0]['message']['content']
