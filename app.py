@@ -28,12 +28,12 @@ def analyze_data_with_gpt4o(data):
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Anda adalah seorang analis data yang ahli dalam data ekspor."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=2048,
+            max_completion_tokens=2048,
             temperature=1.0
         )
         return response.choices[0].message['content']
@@ -104,7 +104,8 @@ if uploaded_files:
                         )
 
                     response = openai.ChatCompletion.create(
-                        model="gpt-4",
+                        model="gpt-4o",
+                        max_completion_tokens="2048"
                         messages=[{"role": "system", "content": "Anda adalah analis data berpengalaman."},
                                   {"role": "user", "content": prompt}]
                     )
@@ -118,19 +119,6 @@ if uploaded_files:
         except Exception as e:
             st.error(f"Error saat memuat file {uploaded_file.name}: {e}")
 
-# Requirements.txt
-def write_requirements():
-    requirements = """
-streamlit
-pandas
-plotly
-python-dotenv
-openai
-"""
-    with open("requirements.txt", "w") as f:
-        f.write(requirements)
-
-write_requirements()
 
 
 
