@@ -28,7 +28,7 @@ def analyze_data_with_gpt4o(data):
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "Anda adalah seorang analis data yang ahli dalam data ekspor."},
                 {"role": "user", "content": prompt}
@@ -87,12 +87,50 @@ if uploaded_files:
             # Visualization menu
             visualize_data(data)
 
-            # GPT-4O Analysis
-            st.write("### Analisis GPT-4O")
-            analysis = analyze_data_with_gpt4o(data)
-            st.write(analysis)
+            # AI Analysis Options
+            st.write("### AI Data Analysis")
+            analysis_type = st.radio("Pilih jenis analisis:", ["Analisis Berdasarkan Data", "Pencarian Detail GPT-4o"])
+            analysis_query = st.text_area("Deskripsi analisis atau detail pencarian:")
+            if st.button("Generate AI Analysis") and analysis_query:
+                try:
+                    if analysis_type == "Analisis Berdasarkan Data":
+                        prompt = (
+                            f"Berdasarkan dataset berikut, lakukan analisis mendalam tentang '{analysis_query}'. Fokuskan analisis pada tren ekspor dan peluang untuk Indonesia:\n"
+                            + data.to_csv(index=False)
+                        )
+                    else:
+                        prompt = (
+                            f"Cari informasi lengkap tentang '{analysis_query}' yang relevan dengan data ekspor Indonesia. Tambahkan referensi sumber terpercaya."
+                        )
+
+                    response = openai.ChatCompletion.create(
+                        model="gpt-4",
+                        messages=[{"role": "system", "content": "Anda adalah analis data berpengalaman."},
+                                  {"role": "user", "content": prompt}]
+                    )
+                    result = response['choices'][0]['message']['content']
+                    st.write("#### Hasil Analisis AI:")
+                    st.write(result)
+
+                except Exception as e:
+                    st.error(f"Error generating analysis: {e}")
 
         except Exception as e:
             st.error(f"Error saat memuat file {uploaded_file.name}: {e}")
+
+# Requirements.txt
+def write_requirements():
+    requirements = """
+streamlit
+pandas
+plotly
+python-dotenv
+openai
+"""
+    with open("requirements.txt", "w") as f:
+        f.write(requirements)
+
+write_requirements()
+
 
 
