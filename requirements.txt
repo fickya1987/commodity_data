@@ -3,4 +3,3 @@ pandas
 plotly
 python-dotenv
 openai==0.28
-streamlit-searchbox
