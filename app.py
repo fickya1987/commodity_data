@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 import openai
 from dotenv import load_dotenv
-from streamlit_searchbox import Searchbox
 import plotly.express as px
 
 # Load environment variables
@@ -66,13 +65,13 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Error saat memuat file: {e}")
 
-# GPT-4O Search feature
-st.sidebar.header("Pencarian Data dengan GPT-4O")
+# GPT-4o Search feature
+st.sidebar.header("Pencarian Data dengan GPT-4o")
 search_query = st.sidebar.text_input("Masukkan pertanyaan pencarian Anda")
 if search_query:
     try:
         search_response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Anda adalah asisten pencarian data ekspor yang membantu."},
                 {"role": "user", "content": search_query}
@@ -83,4 +82,5 @@ if search_query:
         st.sidebar.write(search_response.choices[0].message['content'])
     except Exception as e:
         st.sidebar.error(f"Error: {e}")
+
 
