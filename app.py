@@ -88,10 +88,10 @@ if uploaded_files:
             visualize_data(data)
 
             # AI Analysis Options
-            st.write("### AI Data Analysis")
-            analysis_type = st.radio("Pilih jenis analisis:", ["Analisis Berdasarkan Data", "Pencarian Detail GPT-4o"])
+            st.write("### Pelindo AI Data Analysis")
+            analysis_type = st.radio("Pilih jenis analisis:", ["Analisis Berdasarkan Data", "Pencarian Global Pelindo AI"])
             analysis_query = st.text_area("Deskripsi analisis atau detail pencarian:")
-            if st.button("Generate AI Analysis") and analysis_query:
+            if st.button("Generate Pelindo AI") and analysis_query:
                 try:
                     if analysis_type == "Analisis Berdasarkan Data":
                         prompt = (
